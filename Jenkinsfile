@@ -27,7 +27,7 @@ pipeline{
             steps{
                 withCredentials([usernamePassword(
                     credentialsId: 'jenkins-docker' ,
-                    userVariable: 'DOCKER_USER',
+                    usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]){
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
