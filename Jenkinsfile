@@ -4,7 +4,7 @@ pipeline{
     stages{
         stage("checkout"){
             steps{
-                git url:' https://github.com/samar-raghav/forever.git'  , branch: 'new'
+                git url:' https://github.com/samar-raghav1/forever.git'  , branch: 'new'
 
                 echo "Code checked out successfully"
             }
