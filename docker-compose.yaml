@@ -12,12 +12,12 @@ services:
 
   backend:
     build:
-      context: ./server
+      context: ./backend
       dockerfile: Dockerfile
     container_name: backend
     restart: unless-stopped
     env_file:
-      - ./server/.env
+      - ./backend/.env
     ports:
       - "4000:4000"
     depends_on:
@@ -35,7 +35,7 @@ services:
       - "4001:80"
   admin:
     build:
-      context: ./admmin
+      context: ./admin
       dockerfile: Dockerfile
     container_name: admin
     env_file:
