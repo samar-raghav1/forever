@@ -31,7 +31,7 @@ pipeline{
                     passwordVariable: 'DOCKER_PASS'
                 )]){
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker tag forever-forever:latest samarraghav1/froever-frontend:latest'
+                    sh 'docker tag forever-frontend:latest samarraghav1/forever-frontend:latest'
                     sh 'docker tag forever-backend:latest samarraghav1/forever-backend:latest'
                     sh 'docker tag forever-admin:latest samarraghav1/forever-admin:latest'
                     sh 'docker push samarraghav1/forever-frontend:latest'
