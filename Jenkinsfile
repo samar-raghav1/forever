@@ -23,6 +23,19 @@ pipeline{
             }
         }
 
+        stage('Trivy scan') {
+      steps {
+        sh """
+          trivy image --exit-code 1 --severity CRITICAL,HIGH \
+            --format table samarraghav1/admin:latest
+          trivy image --exit-code 1 --severity CRITICAL,HIGH \
+            --format table samarraghav1/frontend:latest
+          trivy image --exit-code 1 --severity CRITICAL,HIGH \
+            --format table samarraghav1/backend:latest
+        """
+      }
+    }
+
         stage("docker push stage"){
             steps{
                 withCredentials([usernamePassword(
