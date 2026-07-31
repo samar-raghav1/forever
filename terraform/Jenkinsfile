@@ -21,20 +21,19 @@ pipeline {
                     withCredentials([[
                         $class: 'AmazonWebServicesCredentialsBinding',
                         credentialsId: 'aws-jenkins'
-                    ]]) {
-                        sh 'terraform init'
+                        ]]) {
+                        sh '''
+                        aws sts get-caller-identity
+                        terraform init
+                        terraform plan
+                        '''
                     }
+
                 }
             }
         }
 
-        stage('Terraform Plan') {
-            steps {
-                dir('terraform') {
-                    sh 'terraform plan'
-                }
-            }
-        }
+       
 
         stage('Terraform Apply') {
             steps {
