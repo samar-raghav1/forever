@@ -1,6 +1,12 @@
 pipeline{
     agent any
 
+    environment{
+        TAG = "${env.BUILD_NUMBER}"
+    }
+
+    
+
     stages{
         stage("checkout"){
             steps{
@@ -13,11 +19,11 @@ pipeline{
         stage("docker build stage"){
             steps{
                 echo "Building docker image for frontend"
-                sh 'docker build -t forever-frontend:latest ./frontend'
+                sh 'docker build -t forever-frontend:${TAG} ./frontend'
                 echo "Building docker image for backend"
-                sh 'docker build -t forever-backend:latest ./backend'
+                sh 'docker build -t forever-backend:${TAG} ./backend'
                 echo "Building docker image for admin"
-                sh 'docker build -t forever-admin:latest ./admin'
+                sh 'docker build -t forever-admin:${TAG} ./admin'
 
                 echo "Docker images built successfully"
             }
@@ -27,11 +33,11 @@ pipeline{
       steps {
         sh """
           trivy image --exit-code 1 --severity CRITICAL,HIGH \
-            --format table samarraghav1/admin:latest
+            --format table forever-admin:${TAG}
           trivy image --exit-code 1 --severity CRITICAL,HIGH \
-            --format table samarraghav1/frontend:latest
+            --format table forever-frontend:${TAG}
           trivy image --exit-code 1 --severity CRITICAL,HIGH \
-            --format table samarraghav1/backend:latest
+            --format table forever-backend:${TAG}
         """
       }
     }
@@ -44,12 +50,12 @@ pipeline{
                     passwordVariable: 'DOCKER_PASS'
                 )]){
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker tag forever-frontend:latest samarraghav1/forever-frontend:latest'
-                    sh 'docker tag forever-backend:latest samarraghav1/forever-backend:latest'
-                    sh 'docker tag forever-admin:latest samarraghav1/forever-admin:latest'
-                    sh 'docker push samarraghav1/forever-frontend:latest'
-                    sh 'docker push samarraghav1/forever-backend:latest'
-                    sh 'docker push samarraghav1/forever-admin:latest'
+                    sh 'docker tag forever-frontend:${TAG} samarraghav1/forever-frontend:${TAG}'
+                    sh 'docker tag forever-backend:${TAG} samarraghav1/forever-backend:${TAG}'
+                    sh 'docker tag forever-admin:${TAG} samarraghav1/forever-admin:${TAG}'
+                    sh 'docker push samarraghav1/forever-frontend:${TAG}'
+                    sh 'docker push samarraghav1/forever-backend:${TAG}'
+                    sh 'docker push samarraghav1/forever-admin:${TAG}'
 
                     echo "Docker images pushed successfully"
                 }
