@@ -1,8 +1,3 @@
-variable "bucket_name" {
-  type        = string
-  description = "Remote state bucket name"
-}
-
 variable "vpc_cidr" {
   type        = string
   description = "Public Subnet CIDR values"

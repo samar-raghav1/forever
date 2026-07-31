@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "forever-kubernetes-tfstate-ap-south-1-samar-9921-20260731"
+  bucket_prefix = "forever-kubernetes-tfstate-"
 
   tags = {
     Name        = "forever-kubernetes-terraform-state"
