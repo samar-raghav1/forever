@@ -26,19 +26,10 @@ pipeline {
                         aws sts get-caller-identity
                         terraform init
                         terraform plan
+                        terraform apply -auto-approve
                         '''
                     }
 
-                }
-            }
-        }
-
-       
-
-        stage('Terraform Apply') {
-            steps {
-                dir('terraform') {
-                    sh 'terraform apply -auto-approve'
                 }
             }
         }
