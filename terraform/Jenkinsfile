@@ -51,14 +51,15 @@ pipeline {
 
         stage('K8s Deploy') {
             steps {
+                dir('k8s'){
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-jenkins'
                 ]]) {
                     sh '''
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
+                        kubectl apply -f .
                     '''
+                }
                 }
             }
         }
