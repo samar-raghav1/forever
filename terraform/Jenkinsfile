@@ -1,10 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        CLUSTER_NAME = "forever-kubernetes-eks"
+        REGION       = "ap-south-1"
+        TAG          = "${env.BUILD_NUMBER}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/samar-raghav1/forever.git', branch: 'terraform'
+                echo "Code checked out successfully"
             }
         }
 
@@ -24,7 +31,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 dir('terraform') {
-                    sh 'terraform plan '
+                    sh 'terraform plan'
                 }
             }
         }
@@ -32,7 +39,36 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 dir('terraform') {
-                    sh 'terraform apply -auto-approve '
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+        stage('Configure kubectl with eksctl') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins'
+                ]]) {
+                    sh '''
+                        eksctl utils write-kubeconfig \
+                          --cluster=${CLUSTER_NAME} \
+                          --region=${REGION}
+                    '''
+                }
+            }
+        }
+
+        stage('K8s Deploy') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins'
+                ]]) {
+                    sh '''
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/service.yaml
+                    '''
                 }
             }
         }
