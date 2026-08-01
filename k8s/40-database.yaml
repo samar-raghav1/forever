@@ -1,67 +1,40 @@
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: database
+  name: forever-db
   namespace: forever
   labels:
-    app: database
+    app: forever-db
 spec:
-  clusterIP: None
-  selector:
-    app: database
-  ports:
-    - name: postgres
-      port: 5432
-      targetPort: postgres
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: database
-  namespace: forever
-spec:
-  serviceName: database
   replicas: 1
   selector:
     matchLabels:
-      app: database
+      app: forever-db
   template:
     metadata:
       labels:
-        app: database
+        app: forever-db
     spec:
       containers:
-        - name: postgres
-          image: postgres:16
+        - name: mongodb
+          image: mongo:6
           ports:
-            - name: postgres
-              containerPort: 5432
-          envFrom:
-            - secretRef:
-                name: database-credentials
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
-            initialDelaySeconds: 10
-          livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
-            initialDelaySeconds: 30
+            - containerPort: 27017
           volumeMounts:
-            - name: database-data
-              mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:
-    - metadata:
-        name: database-data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 20Gi
+            - name: mongo-data
+              mountPath: /data/db
+      volumes:
+        - name: mongo-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forever-db
+  namespace: forever
+spec:
+  selector:
+    app: forever-db
+  ports:
+    - port: 27017
+      targetPort: 27017

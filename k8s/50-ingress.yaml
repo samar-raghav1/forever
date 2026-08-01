@@ -4,37 +4,32 @@ metadata:
   name: forever-ingress
   namespace: forever
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.class: alb   # Use AWS Load Balancer Controller
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
 spec:
-  ingressClassName: nginx
+  ingressClassName: alb
   rules:
-    - host: app.example.com
-      http:
+    - http:
         paths:
-          - path: /
+          - path: /frontend
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: forever-frontend
                 port:
-                  number: 80
-    - host: admin.example.com
-      http:
-        paths:
-          - path: /
+                  number: 4001
+          - path: /admin
             pathType: Prefix
             backend:
               service:
                 name: admin
                 port:
-                  number: 80
-    - host: api.example.com
-      http:
-        paths:
-          - path: /
+                  number: 4002
+          - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
-                  number: 80
+                  number: 4000

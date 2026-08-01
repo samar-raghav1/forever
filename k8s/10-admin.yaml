@@ -1,50 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: admin
+  name: forever-admin
   namespace: forever
   labels:
-    app: admin
+    app: forever-admin
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: admin
+      app: forever-admin
   template:
     metadata:
       labels:
-        app: admin
+        app: forever-admin
     spec:
       containers:
         - name: admin
-          image: samarraghav1/forever-admin:${TAG}
+          image: samarraghav1/forever-admin:20
           imagePullPolicy: IfNotPresent
           ports:
-            - name: http
-              containerPort: 4002
+            - containerPort: 80
           envFrom:
             - configMapRef:
-                name: application-config
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 30
+                name: admin-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: admin
+  name: forever-admin
   namespace: forever
 spec:
   selector:
-    app: admin
+    app: forever-admin
   ports:
-    - name: http
-      port: 80
-      targetPort: http
+    - port: 4002
+      targetPort: 80

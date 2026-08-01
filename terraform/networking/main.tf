@@ -23,6 +23,8 @@ output "public_subnet_cidr_block" {
 # Setup VPC
 resource "aws_vpc" "forever_vpc_eu_central_1" {
   cidr_block = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Name = var.vpc_name
   }
@@ -35,6 +37,7 @@ resource "aws_subnet" "forever_public_subnets" {
   vpc_id            = aws_vpc.forever_vpc_eu_central_1.id
   cidr_block        = element(var.cidr_public_subnet, count.index)
   availability_zone = element(var.eu_availability_zone, count.index)
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "forever-public-subnet-${count.index + 1}"
@@ -47,6 +50,7 @@ resource "aws_subnet" "forever_private_subnets" {
   vpc_id            = aws_vpc.forever_vpc_eu_central_1.id
   cidr_block        = element(var.cidr_private_subnet, count.index)
   availability_zone = element(var.eu_availability_zone, count.index)
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "forever-private-subnet-${count.index + 1}"
