@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forever-backend
+  namespace: forever
+  labels:
+    app: forever-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forever-backend
+  template:
+    metadata:
+      labels:
+        app: forever-backend
+    spec:
+      containers:
+        - name: backend
+          image: samarraghav1/forever-backend:20
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forever-backend
+  namespace: forever
+spec:
+  selector:
+    app: forever-backend
+  ports:
+    - port: 4000
+      targetPort: 4000

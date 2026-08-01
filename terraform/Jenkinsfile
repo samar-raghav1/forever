@@ -1,0 +1,73 @@
+pipeline {
+    agent any
+
+    environment {
+        CLUSTER_NAME = "forever-kubernetes-eks"
+        REGION       = "ap-south-1"
+        TAG          = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/samar-raghav1/forever.git', branch: 'terraform'
+                echo "Code checked out successfully"
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                dir('terraform') {
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws-jenkins'
+                        ]]) {
+                        sh '''
+                        aws sts get-caller-identity
+                        terraform init
+                        terraform plan
+                        terraform apply -auto-approve
+                        '''
+                    }
+
+                }
+            }
+        }
+
+        stage('Configure kubectl with eksctl') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins'
+                ]]) {
+                    sh '''
+                        eksctl utils write-kubeconfig \
+                          --cluster=${CLUSTER_NAME} \
+                          --region=${REGION}
+                    '''
+                }
+            }
+        }
+
+        stage('K8s Deploy') {
+            steps {
+                dir('k8s'){
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-jenkins'
+                ]]) {
+                    sh '''
+                        kubectl apply -f .
+                    '''
+                }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+    }
+}
