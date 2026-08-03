@@ -17,14 +17,24 @@ spec:
     spec:
       containers:
         - name: backend
-          image: samarraghav1/forever-backend:20
+          image: samarraghav1/forever-backend:8
           ports:
             - containerPort: 4000
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
           envFrom:
             - configMapRef:
                 name: backend-config
             - secretRef:
                 name: backend-secret
+          env:
+          - name: MONGODB_URI
+            value: mongodb://$(MONGO_USER):$(MONGO_PASS)@forever-db.c146cccu4ohk.ap-south-1.rds.amazonaws.com:27017/forever
 ---
 apiVersion: v1
 kind: Service
@@ -37,3 +47,4 @@ spec:
   ports:
     - port: 4000
       targetPort: 4000
+  type: LoadBalancer

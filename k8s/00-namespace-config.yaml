@@ -22,7 +22,6 @@ metadata:
 data:
   JWT_SECRET: "greatstack"
   ADMIN_EMAIL: "admin@example.com"
-  MONGODB_URI: "mongodb://forever-db:27017"
   CLOUDINARY_NAME: "ddewx1h2r"
 
   STRIPE_SECRET_KEY: " sk_test_51RagGuB4jRRkzEmx91JFcuQJ4ykmIJ6atvvlq40hCt93EAb3vMrefA4z4tw6KGxBZM9D0dtMIr4lIhP4siMkEPOb000VI389ih"
@@ -41,4 +40,6 @@ data:
   CLOUDINARY_API_KEY: "ODg4Mjg2NjE3Mzg0MjM4"
   CLOUDINARY_SECRET_KEY: "dGc5eXc5SFo1UEJNWEhITTBuSk80VDhpNnBr"
   ADMIN_PASSWORD: "Z3JlYXRzdGFjazEyMw=="
+  MONGO_USER: YWRtaW4=   # base64 for 'mongouser'
+  MONGO_PASS: bjV5VnhBVDM2cHlrRnJr
   STRIPE_SECRET_KEY: "c2tfdGVzdF81MVJhZ0d1QjRqUlJrekVteDkxSkZjdVFKNHlrbUlKNmF0dnZscTQwaEN0OTNFQWIzdk1yZWZBNHo0dHc2S0d4QlpNOUQwZHRNSXI0bEloUDRzaU1rRVBPYjAwMFZJMzg5aWg="

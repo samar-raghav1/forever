@@ -17,9 +17,16 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: samarraghav1/forever-frontend:20
+          image: samarraghav1/forever-frontend:8
           ports:
             - containerPort: 4001
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
           env:
             - name: VITE_BACKEND_URL
               value: "http://forever-backend:4000"

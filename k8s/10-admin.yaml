@@ -17,10 +17,17 @@ spec:
     spec:
       containers:
         - name: admin
-          image: samarraghav1/forever-admin:20
+          image: samarraghav1/forever-admin:8
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
           envFrom:
             - configMapRef:
                 name: admin-config
