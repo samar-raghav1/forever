@@ -33,8 +33,8 @@ spec:
             - secretRef:
                 name: backend-secret
           env:
-          - name: MONGODB_URI
-            value: mongodb://$(MONGO_USER):$(MONGO_PASS)@forever-db.c146cccu4ohk.ap-south-1.rds.amazonaws.com:27017/forever
+          - name: MYSQL_URI
+            value: mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@forever-db.c146cccu4ohk.ap-south-1.rds.amazonaws.com:27017/e-commerce
 ---
 apiVersion: v1
 kind: Service
