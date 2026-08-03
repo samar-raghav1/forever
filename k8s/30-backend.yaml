@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: samarraghav1/forever-backend:8
+          image: samarraghav1/forever-backend:9
           ports:
             - containerPort: 4000
           resources:
