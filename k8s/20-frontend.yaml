@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: samarraghav1/forever-frontend:8
+          image: samarraghav1/forever-frontend:11
           ports:
             - containerPort: 4001
           resources:

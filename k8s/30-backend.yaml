@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: samarraghav1/forever-backend:9
+          image: samarraghav1/forever-backend:11
           ports:
             - containerPort: 4000
           resources:
@@ -34,7 +34,7 @@ spec:
                 name: backend-secret
           env:
           - name: MYSQL_URI
-            value: mysql://$(MYSQL_USER):$(MYSQL_PASSWORD)@forever-db.c146cccu4ohk.ap-south-1.rds.amazonaws.com:27017/e-commerce
+            value: mysql://root:XyZ@9!qT7r@localhost:3306/mydatabase
 ---
 apiVersion: v1
 kind: Service
