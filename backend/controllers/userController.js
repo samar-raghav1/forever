@@ -14,7 +14,7 @@ const loginUser = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ where: { email } });
 
         if (!user) {
             return res.json({ success: false, message: "User doesn't exists" })
@@ -24,7 +24,7 @@ const loginUser = async (req, res) => {
 
         if (isMatch) {
 
-            const token = createToken(user._id)
+            const token = createToken(user.id)
             res.json({ success: true, token })
 
         }
@@ -45,7 +45,7 @@ const registerUser = async (req, res) => {
         const { name, email, password } = req.body;
 
         // checking user already exists or not
-        const exists = await userModel.findOne({ email });
+        const exists = await userModel.findOne({ where: { email } });
         if (exists) {
             return res.json({ success: false, message: "User already exists" })
         }
@@ -62,15 +62,13 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
-        const newUser = new userModel({
+        const user = await userModel.create({
             name,
             email,
             password: hashedPassword
         })
 
-        const user = await newUser.save()
-
-        const token = createToken(user._id)
+        const token = createToken(user.id)
 
         res.json({ success: true, token })
 

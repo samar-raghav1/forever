@@ -35,8 +35,7 @@ const addProduct = async (req, res) => {
 
         console.log(productData);
 
-        const product = new productModel(productData);
-        await product.save()
+        await productModel.create(productData)
 
         res.json({ success: true, message: "Product Added" })
 
@@ -50,7 +49,7 @@ const addProduct = async (req, res) => {
 const listProducts = async (req, res) => {
     try {
         
-        const products = await productModel.find({});
+        const products = await productModel.findAll();
         res.json({success:true,products})
 
     } catch (error) {
@@ -63,7 +62,7 @@ const listProducts = async (req, res) => {
 const removeProduct = async (req, res) => {
     try {
         
-        await productModel.findByIdAndDelete(req.body.id)
+        await productModel.destroy({ where: { id: req.body.id } })
         res.json({success:true,message:"Product Removed"})
 
     } catch (error) {
@@ -77,7 +76,7 @@ const singleProduct = async (req, res) => {
     try {
         
         const { productId } = req.body
-        const product = await productModel.findById(productId)
+        const product = await productModel.findByPk(productId)
         res.json({success:true,product})
 
     } catch (error) {

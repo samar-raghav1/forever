@@ -32,10 +32,9 @@ const placeOrder = async (req,res) => {
             date: Date.now()
         }
 
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
+        const newOrder = await orderModel.create(orderData)
 
-        await userModel.findByIdAndUpdate(userId,{cartData:{}})
+        await userModel.update({ cartData: {} }, { where: { id: userId } })
 
         res.json({success:true,message:"Order Placed"})
 
@@ -64,8 +63,7 @@ const placeOrderStripe = async (req,res) => {
             date: Date.now()
         }
 
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
+        const newOrder = await orderModel.create(orderData)
 
         const line_items = items.map((item) => ({
             price_data: {
@@ -90,8 +88,8 @@ const placeOrderStripe = async (req,res) => {
         })
 
         const session = await stripe.checkout.sessions.create({
-            success_url: `${origin}/verify?success=true&orderId=${newOrder._id}`,
-            cancel_url:  `${origin}/verify?success=false&orderId=${newOrder._id}`,
+            success_url: `${origin}/verify?success=true&orderId=${newOrder.id}`,
+            cancel_url:  `${origin}/verify?success=false&orderId=${newOrder.id}`,
             line_items,
             mode: 'payment',
         })
@@ -111,11 +109,11 @@ const verifyStripe = async (req,res) => {
 
     try {
         if (success === "true") {
-            await orderModel.findByIdAndUpdate(orderId, {payment:true});
-            await userModel.findByIdAndUpdate(userId, {cartData: {}})
+            await orderModel.update({ payment: true }, { where: { id: orderId } });
+            await userModel.update({ cartData: {} }, { where: { id: userId } })
             res.json({success: true});
         } else {
-            await orderModel.findByIdAndDelete(orderId)
+            await orderModel.destroy({ where: { id: orderId } })
             res.json({success:false})
         }
         
@@ -142,13 +140,12 @@ const placeOrderRazorpay = async (req,res) => {
             date: Date.now()
         }
 
-        const newOrder = new orderModel(orderData)
-        await newOrder.save()
+        const newOrder = await orderModel.create(orderData)
 
         const options = {
             amount: amount * 100,
             currency: currency.toUpperCase(),
-            receipt : newOrder._id.toString()
+            receipt : newOrder.id.toString()
         }
 
         await razorpayInstance.orders.create(options, (error,order)=>{
@@ -172,8 +169,8 @@ const verifyRazorpay = async (req,res) => {
 
         const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id)
         if (orderInfo.status === 'paid') {
-            await orderModel.findByIdAndUpdate(orderInfo.receipt,{payment:true});
-            await userModel.findByIdAndUpdate(userId,{cartData:{}})
+            await orderModel.update({ payment: true }, { where: { id: orderInfo.receipt } });
+            await userModel.update({ cartData: {} }, { where: { id: userId } })
             res.json({ success: true, message: "Payment Successful" })
         } else {
              res.json({ success: false, message: 'Payment Failed' });
@@ -191,7 +188,7 @@ const allOrders = async (req,res) => {
 
     try {
         
-        const orders = await orderModel.find({})
+        const orders = await orderModel.findAll()
         res.json({success:true,orders})
 
     } catch (error) {
@@ -207,7 +204,7 @@ const userOrders = async (req,res) => {
         
         const { userId } = req.body
 
-        const orders = await orderModel.find({ userId })
+        const orders = await orderModel.findAll({ where: { userId } })
         res.json({success:true,orders})
 
     } catch (error) {
@@ -222,7 +219,7 @@ const updateStatus = async (req,res) => {
         
         const { orderId, status } = req.body
 
-        await orderModel.findByIdAndUpdate(orderId, { status })
+        await orderModel.update({ status }, { where: { id: orderId } })
         res.json({success:true,message:'Status Updated'})
 
     } catch (error) {
